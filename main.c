@@ -9,6 +9,7 @@
 
 
 #define SIZE 16
+#define CHAR_BUFFER 256
 
 int main (int argc, char *argv[]) {
     int status;
@@ -16,6 +17,33 @@ int main (int argc, char *argv[]) {
     int shmId;
     pid_t pid;
 
+	int semId;
+	int id = 'S';	
+	char *path;
+
+	struct sembuf sem;
+
+	/*Get sem key*/
+	key_t semkey;
+	getcwd(path, CHAR_BUFFER);
+	semkey = ftok(path, id);
+	
+	/*semget*/
+	if((semId = semget(semkey, 1, IPC_CREATE|S_IRUSR|S_IWUSR)) < 0){
+		perror("Get Error\n");
+		exit(1);
+	}
+	
+	/*sem initialize*/
+	if(semctl(semId, 0, SETVAL, 1) < 0){
+		perror("Init Error\n");
+		exit(1);	
+	}
+
+	sem[0].sem_num = 1;
+	sem[0].sem_op = 1;
+	sem[0].
+	
     /*
      * TODO: get value of loop variable(from command - line
      * argument
