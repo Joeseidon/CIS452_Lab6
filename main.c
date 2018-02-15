@@ -1,3 +1,27 @@
+/*******************************************************************************
+This programming assignment exercises use of a shared memory segment by having
+one process that means to communicate to the others by editing the shared memory
+and having those listening-processes edit their flags of "have received."
+
+@author   - Joseph Cutino, Brendon Murthum
+@version  - Winter 2018
+
+Requirements:
+    - Make sure to maximize potential parallelism.
+    - Protect the critical sections given in the sample code to prevent memory
+      access conflicts from causing inconsistencies in the output.
+        - Insert the appropriate code to create and initialize a semaphore.
+        - User semaphore operations to synchronize the two processes.
+        - Perform required cleanup operations.
+Notes:
+    - Semaphore creation and initialization are two different, non-atomic
+      operations. Be sure they both have completed before another process 
+      attempts to access the semaphore.
+
+Assignment provided by Prof. Hans Dulimarta.
+http://www.cis.gvsu.edu/~dulimarh/CS452/Labs/Lab06-Sem/
+*******************************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -15,16 +39,12 @@ int main (int argc, char *argv[]) {
     long int i, loop, temp, *shmPtr;
     int shmId;
     pid_t pid;
-
-    /*
-     * TODO: get value of loop variable(from command - line
-     * argument
-     */
-	if(argc != 2){
-		exit(0);
-	}
+    
+    // Get the "loop" value from the arguments.
+	if(argc != 2)
+	    exit(0); 
 	loop = atoi(argv[1]);
-		
+
     if ((shmId = shmget (IPC_PRIVATE, SIZE,
                          IPC_CREAT | S_IRUSR | S_IWUSR)) < 0) {
         perror ("i can't get no..\n");
