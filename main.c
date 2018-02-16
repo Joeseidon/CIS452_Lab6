@@ -37,7 +37,6 @@ int main (int argc, char *argv[]) {
     pid_t pid;
 
 	int semId;
-	int semId2;
 	int id = 'S';	
 	char *path = " ";
 
@@ -45,11 +44,9 @@ int main (int argc, char *argv[]) {
 	key_t semkey;
 	getcwd(path, CHAR_BUFFER);
 	semkey = ftok(path, id);
+	unsigned short start_values = {1,0};
 	
-	semId = sem_create(semkey,0);
-	printf("%d \n ",semId);
-	semId2 = sem_create(semkey,0);
-	printf("%d \n",semId2);
+	semId = sem_create(2,semkey,start_values);
     /*
      * TODO: get value of loop variable(from command - line
      * argument
@@ -71,7 +68,7 @@ int main (int argc, char *argv[]) {
     shmPtr[0] = 0;
     shmPtr[1] = 1;
 	
-	sem_signal(semId);
+	sem_signal(semId,0);
 
     if (!(pid = fork ())) {
     /*child*/
@@ -80,7 +77,7 @@ int main (int argc, char *argv[]) {
             /*
              * TODO: swap the contents of shmPtr[0] and  shmPtr[1]
              */
-			 sem_wait(semId2);
+			 sem_wait(semId,1);
              temp = shmPtr[0];
              shmPtr[0]=shmPtr[1];
              shmPtr[1]=temp;
@@ -88,7 +85,7 @@ int main (int argc, char *argv[]) {
              if(shmPtr[0] == shmPtr[1]){
              	printf("Error: %li\n",shmPtr[0]);
              }
-			 sem_signal(semId);
+			 sem_signal(semId,0);
         }
         if (shmdt (shmPtr) < 0) {
             perror ("just can 't let go\n");
@@ -102,11 +99,11 @@ int main (int argc, char *argv[]) {
             /*
              * TODO: swap the contents of shmPtr[1] and shmPtr[0]
              */
-			 sem_wait(semId);
+			 sem_wait(semId,0);
              temp = shmPtr[0];
              shmPtr[0]=shmPtr[1];
              shmPtr[1]=temp;
-			 sem_signal(semId2);
+			 sem_signal(semId,1);
              //printf ("In Parent Loop values: %li\t%li\n", shmPtr[0], shmPtr[1]);
         }
     }
@@ -122,9 +119,7 @@ int main (int argc, char *argv[]) {
         perror ("can't deallocate\n");
         exit (1);
     }
-	printf("1\n");
+
 	sem_delete(semId);
-	printf("2\n");
-	sem_delete(semId2);
     return 0;
 }

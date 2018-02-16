@@ -9,27 +9,27 @@
 #include "sem_wrapper.h"
 
 
-void sem_wait(int semId)
+void sem_wait(int semId, int num)
 {
 	struct sembuf sem_op;
 	
-	sem_op.sem_num = 0;
+	sem_op.sem_num = num;
 	sem_op.sem_op = -1;
 	sem_op.sem_flg = SEM_UNDO;
 	semop(semId, &sem_op, 1);
 }
 
-void sem_signal(int semId)
+void sem_signal(int semId, int num)
 {
 	struct sembuf sem_op;
-	sem_op.sem_num = 0;
+	sem_op.sem_num = num;
 	sem_op.sem_op = 1;
 	sem_op.sem_flg = SEM_UNDO;
 	
 	semop(semId, &sem_op, 1);
 }
 
-int sem_create(key_t semkey, int start_val)
+int sem_create(int num, key_t semkey, unsigned short *start_val)
 {
 	union semun arg;
 	int semId;
@@ -39,8 +39,8 @@ int sem_create(key_t semkey, int start_val)
 		exit(1);
 	}
 	
-	arg.val = start_val;
-	if(semctl(semId, 0, SETVAL, arg) < 0){
+	arg.array = start_val;
+	if(semctl(semId, 0, SETALL, arg) < 0){
 		perror("Init Error\n");
 		exit(1);	
 	}
