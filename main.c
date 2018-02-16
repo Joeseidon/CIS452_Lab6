@@ -23,10 +23,10 @@ void sem_wait(int semId)
 	semop(semId, &sem_op, 1);
 	
 	/*subtract one*/
-	sem_op.sem_num = 0;
+	/*sem_op.sem_num = 0;
 	sem_op.sem_op = -1;
 	sem_op.sem_flg = 0;
-	semop(semId, &sem_op, 1);
+	semop(semId, &sem_op, 1);*/
 }
 
 void sem_signal(int semId)
