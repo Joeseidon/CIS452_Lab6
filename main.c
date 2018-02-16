@@ -78,7 +78,7 @@ int main (int argc, char *argv[]) {
             /*
              * TODO: swap the contents of shmPtr[0] and  shmPtr[1]
              */
-			 sem_wait(semId,1);
+			 sem_wait(semId,0);
              temp = shmPtr[0];
              shmPtr[0]=shmPtr[1];
              shmPtr[1]=temp;
@@ -104,7 +104,7 @@ int main (int argc, char *argv[]) {
              temp = shmPtr[0];
              shmPtr[0]=shmPtr[1];
              shmPtr[1]=temp;
-			 sem_signal(semId,1);
+			 sem_signal(semId,0);
              //printf ("In Parent Loop values: %li\t%li\n", shmPtr[0], shmPtr[1]);
         }
     }
