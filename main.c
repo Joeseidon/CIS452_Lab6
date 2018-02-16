@@ -44,7 +44,7 @@ int main (int argc, char *argv[]) {
 	key_t semkey;
 	getcwd(path, CHAR_BUFFER);
 	semkey = ftok(path, id);
-	unsigned short start_values[2] = {1,0};
+	unsigned short start_values[2] = {0,0};
 	
 	semId = sem_create(2,semkey,start_values);
     /*
