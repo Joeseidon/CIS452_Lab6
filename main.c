@@ -77,9 +77,9 @@ int main (int argc, char *argv[]) {
 	getcwd(path, CHAR_BUFFER);
 	semkey = ftok(path, id);
 	
-	semId = sem_create(1,semkey,initial_val,1);
+	semId = sem_create(1,semkey,1);
 
-	semId2 = sem_create(1,semkey,initial_val,0);
+	semId2 = sem_create(1,semkey,0);
 
 	/*if((semId = semget(semkey, 1, IPC_CREAT|S_IRUSR|S_IWUSR)) < 0){
 		perror("Get Error\n");
