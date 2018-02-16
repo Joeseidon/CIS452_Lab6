@@ -21,12 +21,6 @@ void sem_wait(int semId)
 	sem_op.sem_op = -1;
 	sem_op.sem_flg = SEM_UNDO;
 	semop(semId, &sem_op, 1);
-	
-	/*subtract one*/
-	/*sem_op.sem_num = 0;
-	sem_op.sem_op = -1;
-	sem_op.sem_flg = 0;
-	semop(semId, &sem_op, 1);*/
 }
 
 void sem_signal(int semId)
@@ -37,6 +31,20 @@ void sem_signal(int semId)
 	sem_op.sem_flg = SEM_UNDO;
 	
 	semop(semId, &sem_op, 1);
+}
+
+void sem_create(int *semId, key_t semkey)
+{
+	if((semId = semget(semkey, 1, IPC_CREAT|S_IRUSR|S_IWUSR)) < 0){
+		perror("Get Error\n");
+		exit(1);
+	}
+	
+
+	if(semctl(semId, 0, SETVAL, 0) < 0){
+		perror("Init Error\n");
+		exit(1);	
+	}
 }
 
 int main (int argc, char *argv[]) {
@@ -57,13 +65,15 @@ int main (int argc, char *argv[]) {
 	getcwd(path, CHAR_BUFFER);
 	semkey = ftok(path, id);
 	
-	/*semget*/
-	if((semId = semget(semkey, 1, IPC_CREAT|S_IRUSR|S_IWUSR)) < 0){
+	sem_create(&semId,semkey);
+	sem_create(&semId2,semkey);
+
+	/*if((semId = semget(semkey, 1, IPC_CREAT|S_IRUSR|S_IWUSR)) < 0){
 		perror("Get Error\n");
 		exit(1);
 	}
 	
-	/*sem initialize*/
+
 	if(semctl(semId, 0, SETVAL, 0) < 0){
 		perror("Init Error\n");
 		exit(1);	
@@ -74,11 +84,11 @@ int main (int argc, char *argv[]) {
 		exit(1);
 	}
 	
-	/*sem initialize*/
+
 	if(semctl(semId2, 0, SETVAL, 0) < 0){
 		perror("Init Error\n");
 		exit(1);	
-	}
+	}*/
 	
     /*
      * TODO: get value of loop variable(from command - line
