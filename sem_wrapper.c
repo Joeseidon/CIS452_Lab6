@@ -29,13 +29,11 @@ void sem_signal(int semId, int num)
 	semop(semId, &sem_op, 1);
 }
 
-//int sem_create(int num, key_t semkey, unsigned short *start_val)
 int sem_create(int num, unsigned short *start_val)
 {
 	union semun arg;
 	int semId;
 	
-	//if((semId = semget(semkey, 1, IPC_CREAT|S_IRUSR|S_IWUSR)) < 0){
 	if((semId = semget(IPC_PRIVATE, 1, IPC_CREAT|S_IRUSR|S_IWUSR)) < 0){
 		perror("Get Error\n");
 		exit(1);
