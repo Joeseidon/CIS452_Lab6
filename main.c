@@ -12,6 +12,13 @@
 
 #define SIZE 16
 #define CHAR_BUFFER 256
+union semun
+{
+	int val; // value for SETVAL
+	struct semid_ds* buf; // buffer for IPC_STAT, IPC_SET
+	unsigned short* array; // array for GETALL, SETALL
+	struct seminfo* __buf; // buffer for IPC_INFO
+};
 
 void sem_wait(int semId)
 {
@@ -70,9 +77,12 @@ int main (int argc, char *argv[]) {
 	getcwd(path, CHAR_BUFFER);
 	semkey = ftok(path, id);
 	
-	short initial_val = {0};
+	short initial_val[1];
+	initial_val[0]=1;
 	
 	semId = sem_create(1,semkey,initial_val);
+	
+	initial_val[0]=0;
 	semId2 = sem_create(1,semkey,initial_val);
 
 	/*if((semId = semget(semkey, 1, IPC_CREAT|S_IRUSR|S_IWUSR)) < 0){
@@ -117,7 +127,7 @@ int main (int argc, char *argv[]) {
     }
     shmPtr[0] = 0;
     shmPtr[1] = 1;
-	sem_signal(semId);
+	//sem_signal(semId);
 
     if (!(pid = fork ())) {
     /*child*/
