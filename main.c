@@ -112,16 +112,7 @@ int main (int argc, char *argv[]) {
     }
     else {
         for (i = 0; i < loop; i++) {
-
-            /*
-             * TODO: swap the contents of shmPtr[1] and shmPtr[0]
-             */
-			 /*sem_wait(semId,0);
-             temp = shmPtr[0];
-             shmPtr[0]=shmPtr[1];
-             shmPtr[1]=temp;
-			 sem_signal(semId,0);*/
-             //printf ("In Parent Loop values: %li\t%li\n", shmPtr[0], shmPtr[1]);
+             printf ("In Parent Loop values: %li\t%li\n", shmPtr[0], shmPtr[1]);
 			
 			//Request Access to Critical Section
 			sem_wait(semId,0);
