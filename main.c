@@ -18,8 +18,8 @@ void sem_wait(int semId)
 	struct sembuf sem_op;
 	
 	sem_op.sem_num = 0;
-	sem_op.sem_op = 0;
-	sem_op.sem_flg = 0;
+	sem_op.sem_op = -1;
+	sem_op.sem_flg = SEM_UNDO;
 	semop(semId, &sem_op, 1);
 	
 	/*subtract one*/
@@ -34,7 +34,7 @@ void sem_signal(int semId)
 	struct sembuf sem_op;
 	sem_op.sem_num = 0;
 	sem_op.sem_op = 1;
-	sem_op.sem_flg = 0;
+	sem_op.sem_flg = SEM_UNDO;
 	
 	semop(semId, &sem_op, 1);
 }
