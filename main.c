@@ -46,6 +46,7 @@ int main (int argc, char *argv[]) {
     pid_t pid;
 
 	int semId;
+	int semId2;
 	int id = 'S';	
 	char *path;
 
@@ -68,6 +69,17 @@ int main (int argc, char *argv[]) {
 		exit(1);	
 	}
 	
+	if((semId2 = semget(semkey, 1, IPC_CREAT|S_IRUSR|S_IWUSR)) < 0){
+		perror("Get Error\n");
+		exit(1);
+	}
+	
+	/*sem initialize*/
+	if(semctl(semId2, 0, SETVAL, 0) < 0){
+		perror("Init Error\n");
+		exit(1);	
+	}
+	
     /*
      * TODO: get value of loop variable(from command - line
      * argument
@@ -86,10 +98,8 @@ int main (int argc, char *argv[]) {
         perror ("can't attach\n");
         exit (1);
     }
-	sem_wait(shmId);
     shmPtr[0] = 0;
     shmPtr[1] = 1;
-	sem_signal(shmId);
 
     if (!(pid = fork ())) {
     /*child*/
@@ -98,7 +108,7 @@ int main (int argc, char *argv[]) {
             /*
              * TODO: swap the contents of shmPtr[0] and  shmPtr[1]
              */
-			 sem_wait(shmId);
+			 sem_wait(shmId2);
              temp = shmPtr[0];
              shmPtr[0]=shmPtr[1];
              shmPtr[1]=temp;
@@ -124,7 +134,7 @@ int main (int argc, char *argv[]) {
              temp = shmPtr[0];
              shmPtr[0]=shmPtr[1];
              shmPtr[1]=temp;
-			 sem_signal(shmId);
+			 sem_signal(shmId2);
              //printf ("In Parent Loop values: %li\t%li\n", shmPtr[0], shmPtr[1]);
         }
     }
