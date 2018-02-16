@@ -50,7 +50,7 @@ int sem_create(key_t semkey, int start_val)
 
 void sem_delete(int semId)
 {
-	if( semctl(semId, 0, IPC_RMID, NULL) == -1)
+	if( semctl(semId, 0, IPC_RMID) == -1)
 	{
 		perror("Could Not Remove Semaphore!");
 		exit(1);
