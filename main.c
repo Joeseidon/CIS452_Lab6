@@ -82,6 +82,7 @@ int main (int argc, char *argv[]) {
 		//Swap user provided number of times 
         for (i = 0; i < loop; i++)
 		{
+			printf ("In Child Loop values: %li\t%li\n", shmPtr[0], shmPtr[1]);
 			//Request Access to Critical Section
 			sem_wait(semId,0);
 			
