@@ -80,10 +80,10 @@ int main (int argc, char *argv[]) {
         perror ("can't attach\n");
         exit (1);
     }
-	sem_wait(*shmId);
+	sem_wait(shmId);
     shmPtr[0] = 0;
     shmPtr[1] = 1;
-	sem_signal(*shmId);
+	sem_signal(shmId);
 
     if (!(pid = fork ())) {
     /*child*/
@@ -92,7 +92,7 @@ int main (int argc, char *argv[]) {
             /*
              * TODO: swap the contents of shmPtr[0] and  shmPtr[1]
              */
-			 sem_wait(*shmId);
+			 sem_wait(shmId);
              temp = shmPtr[0];
              shmPtr[0]=shmPtr[1];
              shmPtr[1]=temp;
@@ -100,7 +100,7 @@ int main (int argc, char *argv[]) {
              if(shmPtr[0] == shmPtr[1]){
              	printf("Error: %li\n",shmPtr[0]);
              }
-			 sem_signal(*shmId);
+			 sem_signal(shmId);
         }
         if (shmdt (shmPtr) < 0) {
             perror ("just can 't let go\n");
@@ -114,11 +114,11 @@ int main (int argc, char *argv[]) {
             /*
              * TODO: swap the contents of shmPtr[1] and shmPtr[0]
              */
-			 sem_wait(*shmId);
+			 sem_wait(shmId);
              temp = shmPtr[0];
              shmPtr[0]=shmPtr[1];
              shmPtr[1]=temp;
-			 sem_signal(*shmId);
+			 sem_signal(shmId);
              //printf ("In Parent Loop values: %li\t%li\n", shmPtr[0], shmPtr[1]);
         }
     }
