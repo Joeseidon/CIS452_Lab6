@@ -31,22 +31,29 @@ http://www.cis.gvsu.edu/~dulimarh/CS452/Labs/Lab06-Sem/
 #define CHAR_BUFFER 256
 
 int main (int argc, char *argv[]) {
-    int status;
+	/* Shared Memory Variables */
+	int shmId;
     long int i, loop, temp, *shmPtr;
-    int shmId;
+    
+	/* Multi Process Variables */
     pid_t pid;
+	int status;
 
+	/* Semaphore Variables */
 	int semId;
-	int id = 'S';	
-	char *path = " ";
-
-	/*Get sem key*/
-	key_t semkey;
-	getcwd(path, CHAR_BUFFER);
-	semkey = ftok(path, id);
 	unsigned short start_values[1] = {0};
 	
-	semId = sem_create(1,semkey,start_values);
+	//int id = 'S';	
+	//char *path = " ";
+
+	/*Get sem key*/
+	//key_t semkey;
+	//getcwd(path, CHAR_BUFFER);
+	//semkey = ftok(path, id);
+	
+	
+	//semId = sem_create(1,semkey,start_values);
+	semId = sem_create(1,start_values);
     /*
      * TODO: get value of loop variable(from command - line
      * argument
