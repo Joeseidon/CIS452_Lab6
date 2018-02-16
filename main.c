@@ -40,7 +40,7 @@ void sem_signal(int semId)
 	semop(semId, &sem_op, 1);
 }
 
-int sem_create(int num, key_t semkey, short *vals)
+int sem_create(int num, key_t semkey, unsigned short *vals)
 {
 	union semun arg;
 	int semId;
