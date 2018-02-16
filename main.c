@@ -77,7 +77,7 @@ int main (int argc, char *argv[]) {
 	getcwd(path, CHAR_BUFFER);
 	semkey = ftok(path, id);
 	
-	semId = sem_create(1,semkey,1);
+	semId = sem_create(1,semkey,0);
 
 	semId2 = sem_create(1,semkey,0);
 
@@ -123,7 +123,8 @@ int main (int argc, char *argv[]) {
     }
     shmPtr[0] = 0;
     shmPtr[1] = 1;
-	//sem_signal(semId);
+	
+	sem_signal(semId);
 
     if (!(pid = fork ())) {
     /*child*/
