@@ -6,12 +6,14 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
+#include <sys/sem.h>
+
 
 
 #define SIZE 16
 #define CHAR_BUFFER 256
 
-void wait(int semId)
+void wait(int *semId)
 {
 	struct sembuf sem_op;
 	
@@ -21,7 +23,7 @@ void wait(int semId)
 	semop(semId, &sem_op, 1);
 }
 
-void signal(int semId)
+void signal(int *semId)
 {
 	struct sembuf sem_op;
 	sem_op.sem_num = 0;
