@@ -11,6 +11,26 @@
 #define SIZE 16
 #define CHAR_BUFFER 256
 
+void wait(int semId)
+{
+	struct sembuf sem_op;
+	
+	sem_op.sem_num = 0;
+	sem_op.sem_op = -1;
+	sem_op.sem_flg = 0;
+	semop(semId, &sem_op, 1);
+}
+
+void signal(int semId)
+{
+	struct sembuf sem_op;
+	sem_op.sem_num = 0;
+	sem_op.sem_op = 1;
+	sem_op.sem_flg = 0;
+	
+	semop(semId, &sem_op, 1);
+}
+
 int main (int argc, char *argv[]) {
     int status;
     long int i, loop, temp, *shmPtr;
@@ -39,10 +59,6 @@ int main (int argc, char *argv[]) {
 		perror("Init Error\n");
 		exit(1);	
 	}
-
-	sem[0].sem_num = 1;
-	sem[0].sem_op = 1;
-	sem[0].
 	
     /*
      * TODO: get value of loop variable(from command - line
@@ -62,9 +78,10 @@ int main (int argc, char *argv[]) {
         perror ("can't attach\n");
         exit (1);
     }
-
+	wait(shmId);
     shmPtr[0] = 0;
     shmPtr[1] = 1;
+	signal(shmId);
 
     if (!(pid = fork ())) {
     /*child*/
@@ -73,6 +90,7 @@ int main (int argc, char *argv[]) {
             /*
              * TODO: swap the contents of shmPtr[0] and  shmPtr[1]
              */
+			 wait(shmId);
              temp = shmPtr[0];
              shmPtr[0]=shmPtr[1];
              shmPtr[1]=temp;
@@ -80,6 +98,7 @@ int main (int argc, char *argv[]) {
              if(shmPtr[0] == shmPtr[1]){
              	printf("Error: %li\n",shmPtr[0]);
              }
+			 signal(shmId);
         }
         if (shmdt (shmPtr) < 0) {
             perror ("just can 't let go\n");
@@ -93,9 +112,11 @@ int main (int argc, char *argv[]) {
             /*
              * TODO: swap the contents of shmPtr[1] and shmPtr[0]
              */
+			 wait(shmId);
              temp = shmPtr[0];
              shmPtr[0]=shmPtr[1];
              shmPtr[1]=temp;
+			 signal(shmId);
              //printf ("In Parent Loop values: %li\t%li\n", shmPtr[0], shmPtr[1]);
         }
     }
