@@ -43,7 +43,7 @@ int main (int argc, char *argv[]) {
 	int id = 'S';	
 	char *path;
 
-	struct sembuf sem;
+	//struct sembuf sem;
 
 	/*Get sem key*/
 	key_t semkey;
@@ -51,7 +51,7 @@ int main (int argc, char *argv[]) {
 	semkey = ftok(path, id);
 	
 	/*semget*/
-	if((semId = semget(semkey, 1, IPC_CREATE|S_IRUSR|S_IWUSR)) < 0){
+	if((semId = semget(semkey, 1, IPC_CREAT|S_IRUSR|S_IWUSR)) < 0){
 		perror("Get Error\n");
 		exit(1);
 	}
