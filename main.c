@@ -33,18 +33,23 @@ void sem_signal(int semId)
 	semop(semId, &sem_op, 1);
 }
 
-void sem_create(int *semId, key_t semkey)
+int sem_create(int num, key_t semkey, short *vals)
 {
+	union semun arg;
+	int semId;
+	
 	if((semId = semget(semkey, 1, IPC_CREAT|S_IRUSR|S_IWUSR)) < 0){
 		perror("Get Error\n");
 		exit(1);
 	}
 	
-
-	if(semctl(semId, 0, SETVAL, 0) < 0){
+	arg.array = vals;
+	if(semctl(semId, 0, SETVAL, arg) < 0){
 		perror("Init Error\n");
 		exit(1);	
 	}
+	
+	return semId;
 }
 
 int main (int argc, char *argv[]) {
@@ -65,8 +70,10 @@ int main (int argc, char *argv[]) {
 	getcwd(path, CHAR_BUFFER);
 	semkey = ftok(path, id);
 	
-	sem_create(&semId,semkey);
-	sem_create(&semId2,semkey);
+	short initial_val = {0};
+	
+	semId = sem_create(1,semkey,initial_val);
+	semId2 = sem_create(1,semkey,initial_val);
 
 	/*if((semId = semget(semkey, 1, IPC_CREAT|S_IRUSR|S_IWUSR)) < 0){
 		perror("Get Error\n");
