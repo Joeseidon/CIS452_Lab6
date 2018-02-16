@@ -68,10 +68,11 @@ int main (int argc, char *argv[]) {
     shmPtr[0] = 0;
     shmPtr[1] = 1;
 	
-	//sem_signal(semId,0);
+	
 
     if (!(pid = fork ())) {
     /*child*/
+		sem_signal(semId,0);
         for (i = 0; i < loop; i++) {
 
             /*
