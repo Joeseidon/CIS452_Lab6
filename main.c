@@ -68,7 +68,7 @@ int main (int argc, char *argv[]) {
 	int semId;
 	int semId2;
 	int id = 'S';	
-	char *path;
+	char *path = " ";
 
 	//struct sembuf sem;
 
@@ -77,7 +77,7 @@ int main (int argc, char *argv[]) {
 	getcwd(path, CHAR_BUFFER);
 	semkey = ftok(path, id);
 	
-	short initial_val[1];
+	unsigned short initial_val[1];
 	initial_val[0]=1;
 	
 	semId = sem_create(1,semkey,initial_val);
