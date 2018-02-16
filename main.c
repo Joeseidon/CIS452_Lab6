@@ -63,7 +63,7 @@ int main (int argc, char *argv[]) {
 	}
 	
 	/*sem initialize*/
-	if(semctl(semId, 0, SETVAL, 1) < 0){
+	if(semctl(semId, 0, SETVAL, 0) < 0){
 		perror("Init Error\n");
 		exit(1);	
 	}
