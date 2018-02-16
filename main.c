@@ -122,9 +122,9 @@ int main (int argc, char *argv[]) {
         perror ("can't deallocate\n");
         exit (1);
     }
-	
+	printf("1\n");
 	sem_delete(semId);
-	
+	printf("2\n");
 	sem_delete(semId2);
     return 0;
 }
