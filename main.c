@@ -47,9 +47,9 @@ int main (int argc, char *argv[]) {
 	semkey = ftok(path, id);
 	
 	semId = sem_create(semkey,0);
-
+	printf("%i \n ");
 	semId2 = sem_create(semkey,0);
-	
+	printf("%i \n");
     /*
      * TODO: get value of loop variable(from command - line
      * argument
