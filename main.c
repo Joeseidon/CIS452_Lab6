@@ -1,12 +1,22 @@
 /*******************************************************************************
 This programming assignment exercises use of a shared memory segment by having
-a parent an child process swap two values in shared memory N number of times. 
+a parent an child process swap two values in shared memory N number of times.
 A semaphore is used to prevent errors in the critical section data.
+
 @author   - Joseph Cutino, Brendon Murthum
 @version  - Winter 2018
 
-Observations:
-
+Requirements:
+    - Make sure to maximize potential parallelism.
+    - Protect the critical sections given in the sample code to prevent memory
+      access conflicts from causing inconsistencies in the output.
+        - Insert the appropriate code to create and initialize a semaphore.
+        - User semaphore operations to synchronize the two processes.
+        - Perform required cleanup operations.
+Notes:
+    - Semaphore creation and initialization are two different, non-atomic
+      operations. Be sure they both have completed before another process
+      attempts to access the semaphore.
 
 Assignment provided by Prof. Hans Dulimarta.
 http://www.cis.gvsu.edu/~dulimarh/CS452/Labs/Lab06-Sem/
@@ -31,131 +41,131 @@ http://www.cis.gvsu.edu/~dulimarh/CS452/Labs/Lab06-Sem/
 #define CHAR_BUFFER 256
 
 int main (int argc, char *argv[]) {
-	/* Shared Memory Variables */
-	int shmId;
+    /* Shared Memory Variables */
+    int shmId;
     long int i, loop, temp, *shmPtr;
-    
-	/* Multi Process Variables */
-    pid_t pid;
-	int status;
 
-	/* Semaphore Variables */
-	int semId;
-	unsigned short start_values[1] = {0};
-	
-	/* Create Semaphore */
-	semId = sem_create(1,start_values);
-    
-	/* Retrieve Command Line Argument */
-	if(argc != 2){
-		// exit if an argument isn't provided
-		exit(0);	
-	}
-	
-	//assign loop variable to user provided number 
-	loop = atoi(argv[1]);
-	
-	/* Retrieve shared Memory */
+    /* Multi Process Variables */
+    pid_t pid;
+    int status;
+
+    /* Semaphore Variables */
+    int semId;
+    unsigned short start_values[1] = {0};
+
+    /* Create Semaphore */
+    semId = sem_create(1,start_values);
+
+    /* Retrieve Command Line Argument */
+    if(argc != 2){
+        // exit if an argument isn't provided
+        exit(0);
+    }
+
+    // Assign loop variable to user provided number
+    loop = atoi(argv[1]);
+
+    /* Retrieve shared Memory */
     if ((shmId = shmget (IPC_PRIVATE, SIZE,
                          IPC_CREAT | S_IRUSR | S_IWUSR)) < 0) {
         perror ("i can't get no..\n");
         exit (1);
     }
-	
-	/* Attach Shared Memory */
+
+    /* Attach Shared Memory */
     if ((shmPtr = shmat (shmId, 0, 0)) == (void *) -1) {
         perror ("can't attach\n");
         exit (1);
     }
-	
-	/* Initial Set of Shared Values */
+
+    /* Initial Set of Shared Values */
     shmPtr[0] = 0;
     shmPtr[1] = 1;
-	
-	/* Create Seperate Processes */
+
+    /* Create Seperate Processes */
     if (!(pid = fork ())) {
-		/* Child Process */
-		
-		//Allow first entrance to Critical Section
-		sem_signal(semId,0);
-		
-		//Swap user provided number of times 
+        /* Child Process */
+
+        // Allow first entrance to Critical Section
+        sem_signal(semId,0);
+
+        //Swap user provided number of times
         for (i = 0; i < loop; i++)
-		{
-			//Request Access to Critical Section
-			sem_wait(semId,0);
-			
-			/* Start of Critical Section */
-			//swap shared values 
+        {
+            //Request Access to Critical Section
+            sem_wait(semId,0);
+
+            /* Start of Critical Section */
+            // Swap shared values
             temp = shmPtr[0];
             shmPtr[0]=shmPtr[1];
             shmPtr[1]=temp;
-            
-			//If values have some how become equal, an error has occurred
+
+            // If values have some how become equal, an error has occurred
             if(shmPtr[0] == shmPtr[1]){
-            	printf("Error: %li\n",shmPtr[0]);
+                printf("Error: %li\n",shmPtr[0]);
             }
-			/* End of Critical Section */
-			
-			//Signal Exit of Critical Section
-			sem_signal(semId,0);
+            /* End of Critical Section */
+
+            // Signal Exit of Critical Section
+            sem_signal(semId,0);
         }
-		
-		/* Detach Shared Memory */
+
+        /* Detach Shared Memory */
         if (shmdt (shmPtr) < 0) {
             perror ("just can 't let go\n");
             exit (1);
         }
-		
-		/* Exit Child Process */
+
+        /* Exit Child Process */
         exit (0);
     }
     else {
         for (i = 0; i < loop; i++) {
-			/* Parent Process */
-			
-			//Request Access to Critical Section
-			sem_wait(semId,0);
-			
-			/* Start of Critical Section */
-			//swap shared values 
+            /* Parent Process */
+
+            // Request Access to Critical Section
+            sem_wait(semId,0);
+
+            /* Start of Critical Section */
+            // Swap shared values
             temp = shmPtr[0];
             shmPtr[0]=shmPtr[1];
             shmPtr[1]=temp;
-            
-			//If values have some how become equal, an error has occurred
-            if(shmPtr[0] == shmPtr[1]){
-            	printf("Error: %li\n",shmPtr[0]);
+
+            // If values have some how become equal, an error has occurred
+            if (shmPtr[0] == shmPtr[1]) {
+                printf("Error: %li\n",shmPtr[0]);
             }
-			/* End of Critical Section */
-			
-			//Signal Exit of Critical Section
-			sem_signal(semId,0);
+            /* End of Critical Section */
+
+            //Signal Exit of Critical Section
+            sem_signal(semId,0);
         }
     }
-	
-	/* Wait For Child Process Exit */
+
+    /* Wait For Child Process Exit */
     wait (&status);
-	
-	/* Print Final Values */
+
+    /* Print Final Values */
     printf ("values: %li\t%li\n", shmPtr[0], shmPtr[1]);
 
-	/* Detach Shared Memory */
+    /* Detach Shared Memory */
     if (shmdt (shmPtr) < 0) {
         perror ("just can't let go\n");
         exit (1);
     }
-	
-	/* Deallocate Shared Memory */
+
+    /* Deallocate Shared Memory */
     if (shmctl (shmId, IPC_RMID, 0) < 0) {
         perror ("can't deallocate\n");
         exit (1);
     }
-	
-	/* Delete Semaphore */
-	sem_delete(semId);
-	
-	/* Exit Program */
+
+    /* Delete Semaphore */
+    sem_delete(semId);
+
+    /* Exit Program */
     return 0;
 }
 /* End of Main*/
